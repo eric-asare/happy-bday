@@ -21,14 +21,6 @@ const verses = [
     text:
       "Trust in the LORD with all your heart, and do not lean on your own understanding. In all your ways acknowledge him, and he will make straight your paths.",
     reference: "Proverbs 3:5-6 (ESV)"
-  },
-   {
-    text:"Now to him who is able to keep you from stumbling and to present you blameless before the presence of his glory with great joy, to the only God, our Savior, through Jesus Christ our Lord, be glory, majesty, dominion, and authority, before all time and now and forever. Amen.",
-    reference: "Jude 24-25 (ESV)"
-  },
-  {
-    text:"Now may the God of peace who brought again from the dead our Lord Jesus, the great shepherd of the sheep, by the blood of the eternal covenant, equip you with everything good that you may do his will, working in us that which is pleasing in his sight, through Jesus Christ, to whom be glory forever and ever. Amen.",
-    reference: "Hebrews 13:20-21 (ESV)"
   }
 ];
 
