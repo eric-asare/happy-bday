@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="A birthday website for Christina with scripture, warmth, mango, and oats."
+    >
+    <title>Happy Birthday, Christina</title>
+    <link rel="preload" href="assets/christina-birthday-hero.png" as="image">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="is-loading">
+    <noscript>
+      <style>
+        .loader {
+          display: none;
+        }
+
+        .site-shell {
+          opacity: 1;
+          transform: none;
+        }
+
+        body.is-loading {
+          overflow-x: hidden;
+          overflow-y: auto;
+        }
+      </style>
+    </noscript>
+
+    <div class="loader" id="loader" role="status" aria-live="polite">
+      <p class="loader__eyebrow">Opens in</p>
+      <strong class="loader__count" id="loaderCount">3</strong>
+      <span class="loader__text" id="loaderText">wait</span>
+    </div>
+
+    <canvas id="confetti" aria-hidden="true"></canvas>
+
+    <div class="site-shell">
+      <header class="topbar" aria-label="Birthday page navigation">
+        <a class="brand" href="#top">Christina</a>
+        <nav class="nav-links" aria-label="Page sections">
+          <a href="#memories">Memories</a>
+          <a href="#verses">Verses</a>
+          <a href="#toast">Toast</a>
+        </nav>
+      </header>
+
+      <main id="top">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero__image" aria-hidden="true"></div>
+          <div class="hero__overlay" aria-hidden="true"></div>
+          <div class="hero__content">
+            <p class="kicker">May 8, a special day</p>
+            <h1 id="hero-title">Happy Birthday, Christina</h1>
+            <p class="hero__lead">
+              A little corner of the internet just for you on your special day
+              &#128514;
+            </p>
+            <div class="hero__actions" aria-label="Birthday actions">
+              <button class="button button--primary" id="openVerse" type="button">
+                Open a verse
+              </button>
+            </div>
+          </div>
+        </section>
+
+          <section class="toast-band" id="toast" aria-labelledby="toast-title">
+          <div class="toast-layout">
+            <div class="toast-copy">
+              <p class="section-kicker">A birthday toast</p>
+              <h2 id="toast-title">To another bright lap around the sun.</h2>
+              <p>
+                Christina, may God bless this new year with peace, courage,
+                laughter, gospel opportunities, mango sweetness, oats comfort, and reminders that you
+                are deeply loved by a BIG God.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="memories-band" id="memories" aria-labelledby="memories-title">
+          <div class="memories-wrap">
+            <div class="memories-copy">
+              <p class="section-kicker">Memories</p>
+              <h2 id="memories-title">
+                You are a blessing to us!
+              </h2>
+              <p>
+                Thanks for being a fellow church member, sister in Christ, and a
+                friend.
+              </p>
+            </div>
+
+            <div class="memory-collage" aria-label="Swipeable memory collage">
+              <div class="memory-stage" id="memoryStage">
+                <img
+                  id="memoryImage"
+                  src="assets/memories/cat-hospitality.jpg"
+                  alt="Cat hospitality memory placeholder"
+                  draggable="false"
+                >
+                <div class="memory-fallback" id="memoryFallback" hidden>
+                  <span id="memoryInitial">01</span>
+                </div>
+                <button
+                  class="memory-arrow memory-arrow--prev"
+                  id="memoryPrev"
+                  type="button"
+                  aria-label="Previous memory"
+                >
+                  ‹
+                </button>
+                <button
+                  class="memory-arrow memory-arrow--next"
+                  id="memoryNext"
+                  type="button"
+                  aria-label="Next memory"
+                >
+                  ›
+                </button>
+                <div class="memory-caption">
+                  <p id="memoryLabel">Hospitality</p>
+                  <strong id="memoryTitle">Warm tables, open doors</strong>
+                  <span id="memoryHint">A placeholder for a real memory.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="verse-band" id="verses" aria-labelledby="verses-title">
+          <div class="verse-layout">
+            <div class="verse-copy">
+              <p class="section-kicker">Birthday scripture</p>
+              <h2 id="verses-title">A few promises to carry with you into the new year.</h2>
+            </div>
+            <div class="verse-maker" aria-live="polite">
+              <blockquote class="verse-maker__text" id="verseText">
+                The LORD bless thee, and keep thee: The LORD make his face shine
+                upon thee, and be gracious unto thee: The LORD lift up his
+                countenance upon thee, and give thee peace.
+              </blockquote>
+              <p class="verse-maker__reference" id="verseReference">
+                Numbers 6:24-26 KJV
+              </p>
+              <button class="button button--accent" id="newVerse" type="button">
+                Another verse
+              </button>
+            </div>
+          </div>
+        </section>
+
+  
+        <section class="signature" aria-label="Birthday sign off">
+          <h2>Happy Birthday, Christina !!!</h2>
+          <h3>Have a mangoful day</h3>
+          <p>Made with 💛 Eric</p>
+          <p>will take down in a week 😊</p>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

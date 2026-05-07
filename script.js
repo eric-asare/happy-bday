@@ -1,0 +1,301 @@
+const verses = [
+  {
+    text:
+      "The LORD bless thee, and keep thee: The LORD make his face shine upon thee, and be gracious unto thee: The LORD lift up his countenance upon thee, and give thee peace.",
+    reference: "Numbers 6:24-26 KJV"
+  },
+  {
+    text:
+      "This is the day which the LORD hath made; we will rejoice and be glad in it.",
+    reference: "Psalm 118:24 KJV"
+  },
+  {
+    text:
+      "Delight thyself also in the LORD; and he shall give thee the desires of thine heart.",
+    reference: "Psalm 37:4 KJV"
+  },
+  {
+    text:
+      "For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you an expected end.",
+    reference: "Jeremiah 29:11 KJV"
+  },
+  {
+    text:
+      "Trust in the LORD with all thine heart; and lean not unto thine own understanding. In all thy ways acknowledge him, and he shall direct thy paths.",
+    reference: "Proverbs 3:5-6 KJV"
+  },
+  {
+    text:
+      "Now unto him that is able to do exceeding abundantly above all that we ask or think, according to the power that worketh in us.",
+    reference: "Ephesians 3:20 KJV"
+  }
+];
+
+const canvas = document.querySelector("#confetti");
+const ctx = canvas.getContext("2d");
+const loader = document.querySelector("#loader");
+const loaderCount = document.querySelector("#loaderCount");
+const loaderText = document.querySelector("#loaderText");
+const openVerseButton = document.querySelector("#openVerse");
+const newVerseButton = document.querySelector("#newVerse");
+const verseText = document.querySelector("#verseText");
+const verseReference = document.querySelector("#verseReference");
+const verseSection = document.querySelector("#verses");
+const memoryStage = document.querySelector("#memoryStage");
+const memoryImage = document.querySelector("#memoryImage");
+const memoryFallback = document.querySelector("#memoryFallback");
+const memoryInitial = document.querySelector("#memoryInitial");
+const memoryLabel = document.querySelector("#memoryLabel");
+const memoryTitle = document.querySelector("#memoryTitle");
+const memoryHint = document.querySelector("#memoryHint");
+const memoryPrevButton = document.querySelector("#memoryPrev");
+const memoryNextButton = document.querySelector("#memoryNext");
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+const introSteps = [
+  { count: "3", text: "wait" },
+  { count: "2", text: "waiiit" },
+  { count: "1", text: "waiiiiiiiiit" }
+];
+
+const memories = [
+  {
+    label: "Hospitality",
+    title: "Warm tables, open doors",
+    hint: "A placeholder for the meals, welcome, and care you give so freely.",
+    image: "assets/memories/cat-hospitality.jpg",
+    alt: "Cat hospitality memory placeholder",
+    initial: "01"
+  },
+  {
+    label: "Students",
+    title: "A blessing to students",
+    hint: "A placeholder for the many students touched by your warmth.",
+    image: "assets/memories/cat-students.jpg",
+    alt: "Cat students memory placeholder",
+    initial: "02"
+  },
+  {
+    label: "Church family",
+    title: "Brothers and sisters in Christ",
+    hint: "A placeholder for the church family gathered around you.",
+    image: "assets/memories/cat-church-family.jpg",
+    alt: "Cat church family memory placeholder",
+    initial: "03"
+  },
+  {
+    label: "Friendship",
+    title: "Sister in Christ and friend",
+    hint: "A placeholder for friendship, prayer, and shared life.",
+    image: "assets/memories/cat-friendship.jpg",
+    alt: "Cat friendship memory placeholder",
+    initial: "04"
+  }
+];
+
+let particles = [];
+let rafId = null;
+let lastVerseIndex = 0;
+let activeMemoryIndex = 0;
+let swipeStartX = null;
+
+function resizeCanvas() {
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.floor(window.innerWidth * ratio);
+  canvas.height = Math.floor(window.innerHeight * ratio);
+  canvas.style.width = `${window.innerWidth}px`;
+  canvas.style.height = `${window.innerHeight}px`;
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+}
+
+function createParticle(originX, originY) {
+  const colors = ["#cf5f78", "#ee8b72", "#f3aa21", "#d8c9a6", "#789a7b", "#fff8ef"];
+  const angle = Math.random() * Math.PI * 2;
+  const speed = 3 + Math.random() * 6;
+
+  return {
+    x: originX,
+    y: originY,
+    vx: Math.cos(angle) * speed,
+    vy: Math.sin(angle) * speed - 3,
+    width: 6 + Math.random() * 8,
+    height: 8 + Math.random() * 12,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    rotation: Math.random() * Math.PI,
+    spin: -0.18 + Math.random() * 0.36,
+    life: 90 + Math.random() * 40,
+    age: 0
+  };
+}
+
+function burst(originX = window.innerWidth * 0.34, originY = window.innerHeight * 0.42) {
+  if (reducedMotion.matches) {
+    return;
+  }
+
+  const count = window.innerWidth < 620 ? 70 : 120;
+
+  for (let index = 0; index < count; index += 1) {
+    particles.push(createParticle(originX, originY));
+  }
+
+  if (!rafId) {
+    rafId = requestAnimationFrame(tick);
+  }
+}
+
+function tick() {
+  ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+  particles = particles.filter((particle) => {
+    particle.age += 1;
+    particle.x += particle.vx;
+    particle.y += particle.vy;
+    particle.vy += 0.12;
+    particle.vx *= 0.985;
+    particle.rotation += particle.spin;
+
+    const alpha = Math.max(1 - particle.age / particle.life, 0);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(particle.x, particle.y);
+    ctx.rotate(particle.rotation);
+    ctx.fillStyle = particle.color;
+    ctx.fillRect(
+      -particle.width / 2,
+      -particle.height / 2,
+      particle.width,
+      particle.height
+    );
+    ctx.restore();
+
+    return particle.age < particle.life && particle.y < window.innerHeight + 40;
+  });
+
+  if (particles.length) {
+    rafId = requestAnimationFrame(tick);
+  } else {
+    rafId = null;
+  }
+}
+
+function setNewVerse() {
+  let nextIndex = Math.floor(Math.random() * verses.length);
+
+  if (nextIndex === lastVerseIndex) {
+    nextIndex = (nextIndex + 1) % verses.length;
+  }
+
+  lastVerseIndex = nextIndex;
+  verseText.textContent = verses[nextIndex].text;
+  verseReference.textContent = verses[nextIndex].reference;
+  verseText.parentElement.classList.remove("is-changing");
+
+  window.requestAnimationFrame(() => {
+    verseText.parentElement.classList.add("is-changing");
+  });
+}
+
+function handleVerseClick(event) {
+  const rect = event.currentTarget.getBoundingClientRect();
+  burst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  setNewVerse();
+
+  if (event.currentTarget === openVerseButton) {
+    verseSection.scrollIntoView({
+      behavior: reducedMotion.matches ? "auto" : "smooth",
+      block: "start"
+    });
+  }
+}
+
+function setMemory(index) {
+  activeMemoryIndex = (index + memories.length) % memories.length;
+  const memory = memories[activeMemoryIndex];
+
+  memoryLabel.textContent = memory.label;
+  memoryTitle.textContent = memory.title;
+  memoryHint.textContent = memory.hint;
+  memoryInitial.textContent = memory.initial;
+  memoryFallback.hidden = true;
+  memoryImage.hidden = false;
+  memoryImage.alt = memory.alt;
+  memoryImage.src = memory.image;
+}
+
+function shiftMemory(direction) {
+  setMemory(activeMemoryIndex + direction);
+}
+
+function handleMemoryPointerDown(event) {
+  swipeStartX = event.clientX;
+}
+
+function handleMemoryPointerUp(event) {
+  if (swipeStartX === null) {
+    return;
+  }
+
+  const deltaX = event.clientX - swipeStartX;
+  swipeStartX = null;
+
+  if (Math.abs(deltaX) < 48) {
+    return;
+  }
+
+  shiftMemory(deltaX < 0 ? 1 : -1);
+}
+
+function showIntroStep(index) {
+  loaderCount.textContent = introSteps[index].count;
+  loaderText.textContent = introSteps[index].text;
+}
+
+function revealSite() {
+  document.body.classList.remove("is-loading");
+  loader.setAttribute("aria-hidden", "true");
+  window.setTimeout(() => burst(), reducedMotion.matches ? 0 : 500);
+}
+
+function runIntro() {
+  if (!loader) {
+    return;
+  }
+
+  const introDuration = 5000;
+  const delay = introDuration / introSteps.length;
+  let stepIndex = 0;
+
+  showIntroStep(stepIndex);
+
+  const introInterval = window.setInterval(() => {
+    stepIndex += 1;
+
+    if (stepIndex < introSteps.length) {
+      showIntroStep(stepIndex);
+      return;
+    }
+
+    window.clearInterval(introInterval);
+    revealSite();
+  }, delay);
+}
+
+window.addEventListener("resize", resizeCanvas);
+openVerseButton.addEventListener("click", handleVerseClick);
+newVerseButton.addEventListener("click", handleVerseClick);
+memoryPrevButton.addEventListener("click", () => shiftMemory(-1));
+memoryNextButton.addEventListener("click", () => shiftMemory(1));
+memoryStage.addEventListener("pointerdown", handleMemoryPointerDown);
+memoryStage.addEventListener("pointerup", handleMemoryPointerUp);
+memoryStage.addEventListener("pointercancel", () => {
+  swipeStartX = null;
+});
+memoryImage.addEventListener("error", () => {
+  memoryImage.hidden = true;
+  memoryFallback.hidden = false;
+});
+
+resizeCanvas();
+setMemory(0);
+runIntro();
