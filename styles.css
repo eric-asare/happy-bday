@@ -286,6 +286,53 @@ body:not(.is-loading) .loader {
   box-shadow: var(--shadow);
 }
 
+.button--candle {
+  position: relative;
+  gap: 10px;
+  overflow: visible;
+}
+
+.button--candle::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 12px;
+  height: 17px;
+  border-radius: 70% 70% 55% 55% / 85% 85% 45% 45%;
+  background:
+    radial-gradient(circle at 50% 67%, #fff8ef 0 18%, transparent 19%),
+    radial-gradient(circle at 50% 55%, #ffd36a 0 45%, #f3aa21 46% 68%, #cf5f78 69%);
+  box-shadow:
+    0 0 14px rgba(243, 170, 33, 0.6),
+    0 0 24px rgba(207, 95, 120, 0.24);
+  transform: rotate(-7deg);
+  transform-origin: 50% 82%;
+  animation: candle-flicker 1.2s ease-in-out infinite alternate;
+}
+
+.button--candle::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 22px;
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 28% 56%, rgba(111, 91, 89, 0.44), transparent 46%),
+    radial-gradient(circle at 68% 36%, rgba(255, 248, 239, 0.76), transparent 48%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(0, 0) scale(0.55);
+}
+
+.button--candle.is-blowing::before {
+  animation: candle-flame-out 650ms ease forwards;
+}
+
+.button--candle.is-blowing::after {
+  animation: candle-smoke 760ms ease-out forwards;
+}
+
 .button--secondary {
   border-color: rgba(255, 253, 248, 0.5);
   background: rgba(255, 253, 248, 0.1);
@@ -715,6 +762,54 @@ body:not(.is-loading) .loader {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes candle-flicker {
+  0% {
+    filter: brightness(1);
+    transform: rotate(-9deg) scaleY(0.94);
+  }
+
+  100% {
+    filter: brightness(1.12);
+    transform: rotate(5deg) scaleY(1.05);
+  }
+}
+
+@keyframes candle-flame-out {
+  0% {
+    opacity: 1;
+    filter: blur(0) brightness(1.15);
+    transform: translate(0, 0) rotate(-7deg) scale(1);
+  }
+
+  62% {
+    opacity: 0.78;
+    filter: blur(1px) brightness(0.92);
+    transform: translate(-8px, -3px) rotate(-18deg) scale(0.7);
+  }
+
+  100% {
+    opacity: 0;
+    filter: blur(4px) brightness(0.8);
+    transform: translate(-22px, -8px) rotate(-30deg) scale(0.22);
+  }
+}
+
+@keyframes candle-smoke {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.55);
+  }
+
+  28% {
+    opacity: 0.86;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-22px, -22px) scale(1.7);
   }
 }
 

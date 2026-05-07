@@ -36,11 +36,11 @@ const ctx = canvas.getContext("2d");
 const loader = document.querySelector("#loader");
 const loaderCount = document.querySelector("#loaderCount");
 const loaderText = document.querySelector("#loaderText");
-const openVerseButton = document.querySelector("#openVerse");
+const blowCandleButton = document.querySelector("#blowCandle");
 const newVerseButton = document.querySelector("#newVerse");
 const verseText = document.querySelector("#verseText");
 const verseReference = document.querySelector("#verseReference");
-const verseSection = document.querySelector("#verses");
+const toastSection = document.querySelector("#toast");
 const memoryStage = document.querySelector("#memoryStage");
 const memoryImage = document.querySelector("#memoryImage");
 const memoryFallback = document.querySelector("#memoryFallback");
@@ -108,12 +108,13 @@ function resizeCanvas() {
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
 }
 
-function createParticle(originX, originY) {
+function createConfettiParticle(originX, originY) {
   const colors = ["#cf5f78", "#ee8b72", "#f3aa21", "#d8c9a6", "#789a7b", "#fff8ef"];
   const angle = Math.random() * Math.PI * 2;
   const speed = 3 + Math.random() * 6;
 
   return {
+    kind: "confetti",
     x: originX,
     y: originY,
     vx: Math.cos(angle) * speed,
@@ -128,6 +129,39 @@ function createParticle(originX, originY) {
   };
 }
 
+function createSparkParticle(originX, originY) {
+  const colors = ["#fff8ef", "#ffd36a", "#f3aa21", "#ee8b72", "#cf5f78"];
+  const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.55;
+  const speed = 2.4 + Math.random() * 5.6;
+
+  return {
+    kind: "spark",
+    x: originX,
+    y: originY,
+    vx: Math.cos(angle) * speed,
+    vy: Math.sin(angle) * speed,
+    radius: 2 + Math.random() * 5,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    life: 34 + Math.random() * 26,
+    age: 0
+  };
+}
+
+function createSmokeParticle(originX, originY) {
+  return {
+    kind: "smoke",
+    x: originX + (Math.random() - 0.5) * 28,
+    y: originY + (Math.random() - 0.5) * 10,
+    vx: (Math.random() - 0.5) * 0.95,
+    vy: -0.8 - Math.random() * 1.55,
+    radius: 8 + Math.random() * 16,
+    growth: 0.24 + Math.random() * 0.28,
+    color: "#6f5b59",
+    life: 72 + Math.random() * 42,
+    age: 0
+  };
+}
+
 function burst(originX = window.innerWidth * 0.34, originY = window.innerHeight * 0.42) {
   if (reducedMotion.matches) {
     return;
@@ -136,7 +170,33 @@ function burst(originX = window.innerWidth * 0.34, originY = window.innerHeight 
   const count = window.innerWidth < 620 ? 70 : 120;
 
   for (let index = 0; index < count; index += 1) {
-    particles.push(createParticle(originX, originY));
+    particles.push(createConfettiParticle(originX, originY));
+  }
+
+  if (!rafId) {
+    rafId = requestAnimationFrame(tick);
+  }
+}
+
+function candleBurst(originX, originY) {
+  if (reducedMotion.matches) {
+    return;
+  }
+
+  const sparkCount = window.innerWidth < 620 ? 34 : 56;
+  const smokeCount = window.innerWidth < 620 ? 26 : 42;
+  const confettiCount = window.innerWidth < 620 ? 48 : 78;
+
+  for (let index = 0; index < sparkCount; index += 1) {
+    particles.push(createSparkParticle(originX, originY));
+  }
+
+  for (let index = 0; index < smokeCount; index += 1) {
+    particles.push(createSmokeParticle(originX, originY - 10));
+  }
+
+  for (let index = 0; index < confettiCount; index += 1) {
+    particles.push(createConfettiParticle(originX, originY));
   }
 
   if (!rafId) {
@@ -149,6 +209,51 @@ function tick() {
 
   particles = particles.filter((particle) => {
     particle.age += 1;
+
+    if (particle.kind === "smoke") {
+      particle.x += particle.vx;
+      particle.y += particle.vy;
+      particle.vx *= 0.992;
+      particle.radius += particle.growth;
+
+      const alpha = Math.max(1 - particle.age / particle.life, 0) * 0.42;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = particle.color;
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      return particle.age < particle.life;
+    }
+
+    if (particle.kind === "spark") {
+      particle.x += particle.vx;
+      particle.y += particle.vy;
+      particle.vy += 0.035;
+      particle.vx *= 0.988;
+      particle.radius *= 0.985;
+
+      const alpha = Math.max(1 - particle.age / particle.life, 0);
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(particle.x, particle.y);
+
+      const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, particle.radius * 2.3);
+      glow.addColorStop(0, "#fff8ef");
+      glow.addColorStop(0.48, particle.color);
+      glow.addColorStop(1, "rgba(207, 95, 120, 0)");
+
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, particle.radius * 2.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      return particle.age < particle.life;
+    }
+
     particle.x += particle.vx;
     particle.y += particle.vy;
     particle.vy += 0.12;
@@ -200,13 +305,27 @@ function handleVerseClick(event) {
   const rect = event.currentTarget.getBoundingClientRect();
   burst(rect.left + rect.width / 2, rect.top + rect.height / 2);
   setNewVerse();
+}
 
-  if (event.currentTarget === openVerseButton) {
-    verseSection.scrollIntoView({
+function handleCandleClick(event) {
+  const button = event.currentTarget;
+  const rect = button.getBoundingClientRect();
+  const originX = rect.left + Math.min(36, rect.width * 0.22);
+  const originY = rect.top + rect.height / 2;
+
+  button.classList.add("is-blowing");
+  candleBurst(originX, originY);
+
+  window.setTimeout(() => {
+    toastSection.scrollIntoView({
       behavior: reducedMotion.matches ? "auto" : "smooth",
       block: "start"
     });
-  }
+
+    window.setTimeout(() => {
+      button.classList.remove("is-blowing");
+    }, reducedMotion.matches ? 0 : 700);
+  }, reducedMotion.matches ? 0 : 650);
 }
 
 function setMemory(index) {
@@ -282,7 +401,7 @@ function runIntro() {
 }
 
 window.addEventListener("resize", resizeCanvas);
-openVerseButton.addEventListener("click", handleVerseClick);
+blowCandleButton.addEventListener("click", handleCandleClick);
 newVerseButton.addEventListener("click", handleVerseClick);
 memoryPrevButton.addEventListener("click", () => shiftMemory(-1));
 memoryNextButton.addEventListener("click", () => shiftMemory(1));
