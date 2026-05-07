@@ -61,8 +61,7 @@ const introSteps = [
 
 const memories = [
   {
-    label: "Hospitality",
-    title: "Warm tables, open doors",
+    label:  "Warm tables, open doors",
     hint: "for the meals, and care you give so freely.",
     image: "assets/memories/students.JPG",
     alt: "hospitality memory placeholder",
@@ -70,7 +69,6 @@ const memories = [
   },
   {
     label: "Students",
-    title: "Blessing to students",
     hint: "for the many students touched by your love for the gospel.",
     image: "assets/memories/blessingstudents.JPG",
     alt: "students memory placeholder",
@@ -78,7 +76,6 @@ const memories = [
   },
   {
     label: "Church family",
-    title: "Fellowship in Christ",
     hint: "for the church family you love so well.",
     image: "assets/memories/biggroup.JPG",
     alt: "church family memory placeholder",
@@ -86,7 +83,6 @@ const memories = [
   },
   {
     label: "Friendship",
-    title: "Sister in Christ and friend",
     hint: "for friendship, prayer, and shared life.",
     image: "assets/memories/fun.JPG",
     alt: "friendship memory placeholder",
