@@ -63,14 +63,14 @@ const memories = [
   {
     label: "Hospitality",
     title: "Warm tables, open doors",
-    hint: "for the meals, welcome, and care you give so freely.",
+    hint: "for the meals, and care you give so freely.",
     image: "assets/memories/students.JPG",
     alt: "hospitality memory placeholder",
     initial: "01"
   },
   {
     label: "Students",
-    title: "A blessing to students",
+    title: "Blessing to students",
     hint: "for the many students touched by your love for the gospel.",
     image: "assets/memories/blessingstudents.JPG",
     alt: "students memory placeholder",
@@ -78,8 +78,8 @@ const memories = [
   },
   {
     label: "Church family",
-    title: "Brothers and sisters in Christ",
-    hint: "for the church family gathered around you.",
+    title: "Fellowship in Christ",
+    hint: "for the church family you love so well.",
     image: "assets/memories/biggroup.JPG",
     alt: "church family memory placeholder",
     initial: "03"
