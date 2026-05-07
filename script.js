@@ -1,33 +1,34 @@
 const verses = [
   {
-    text:
-      "The LORD bless thee, and keep thee: The LORD make his face shine upon thee, and be gracious unto thee: The LORD lift up his countenance upon thee, and give thee peace.",
-    reference: "Numbers 6:24-26 KJV"
+    text: "Know therefore that the LORD your God is God, the faithful God who keeps covenant and steadfast love with those who love him and keep his commandments, to a thousand generations ",
+    reference: "Deuteronomy 7:9 (ESV)"
+  },
+  {
+    text:"As for you, O LORD, you will not restrain your mercy from me; your steadfast love and your faithfulness will ever preserve me!",
+    reference: "Psalm 40:11 (ESV)"
   },
   {
     text:
-      "This is the day which the LORD hath made; we will rejoice and be glad in it.",
-    reference: "Psalm 118:24 KJV"
+      "And God is able to make all grace abound to you, so that having all sufficiency in all things at all times, you may abound in every good work.",
+    reference: "2 Corinthians 9:8 (ESV)"
   },
   {
     text:
-      "Delight thyself also in the LORD; and he shall give thee the desires of thine heart.",
-    reference: "Psalm 37:4 KJV"
+      "Therefore, my beloved brothers, be steadfast, immovable, always abounding in the work of the Lord, knowing that in the Lord your labor is not in vain.",
+    reference: "1 Corinthians 15:58 (ESV)"
   },
   {
     text:
-      "For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you an expected end.",
-    reference: "Jeremiah 29:11 KJV"
+      "Trust in the LORD with all your heart, and do not lean on your own understanding. In all your ways acknowledge him, and he will make straight your paths.",
+    reference: "Proverbs 3:5-6 (ESV)"
+  },
+   {
+    text:"Now to him who is able to keep you from stumbling and to present you blameless before the presence of his glory with great joy, to the only God, our Savior, through Jesus Christ our Lord, be glory, majesty, dominion, and authority, before all time and now and forever. Amen.",
+    reference: "Jude 24-25 (ESV)"
   },
   {
-    text:
-      "Trust in the LORD with all thine heart; and lean not unto thine own understanding. In all thy ways acknowledge him, and he shall direct thy paths.",
-    reference: "Proverbs 3:5-6 KJV"
-  },
-  {
-    text:
-      "Now unto him that is able to do exceeding abundantly above all that we ask or think, according to the power that worketh in us.",
-    reference: "Ephesians 3:20 KJV"
+    text:"Now may the God of peace who brought again from the dead our Lord Jesus, the great shepherd of the sheep, by the blood of the eternal covenant, equip you with everything good that you may do his will, working in us that which is pleasing in his sight, through Jesus Christ, to whom be glory forever and ever. Amen.",
+    reference: "Hebrews 13:20-21 (ESV)"
   }
 ];
 
