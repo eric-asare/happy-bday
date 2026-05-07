@@ -87,6 +87,25 @@ let rafId = null;
 let lastVerseIndex = 0;
 let activeMemoryIndex = 0;
 let swipeStartX = null;
+let birthdayAudioContext = null;
+let activeBirthdayNotes = [];
+
+const birthdayMelody = [
+  { note: "G4", beats: 0.5 },
+  { note: "G4", beats: 0.5 },
+  { note: "A4", beats: 1 },
+  { note: "G4", beats: 1 },
+  { note: "C5", beats: 1 },
+  { note: "B4", beats: 1.7 }
+];
+
+const noteFrequencies = {
+  G4: 392,
+  A4: 440,
+  B4: 493.88,
+  C5: 523.25,
+  D5: 587.33
+};
 
 function resizeCanvas() {
   const ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -145,7 +164,7 @@ function createSmokeParticle(originX, originY) {
     vy: -0.8 - Math.random() * 1.55,
     radius: 8 + Math.random() * 16,
     growth: 0.24 + Math.random() * 0.28,
-    color: "#6f5b59",
+    color: "#f7f1e8",
     life: 72 + Math.random() * 42,
     age: 0
   };
@@ -296,6 +315,61 @@ function handleVerseClick(event) {
   setNewVerse();
 }
 
+function stopBirthdaySong() {
+  activeBirthdayNotes.forEach((oscillator) => {
+    try {
+      oscillator.stop();
+    } catch (error) {
+      // The note may have already ended.
+    }
+  });
+  activeBirthdayNotes = [];
+}
+
+function playBirthdaySong() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+  if (!AudioContext) {
+    return;
+  }
+
+  if (!birthdayAudioContext) {
+    birthdayAudioContext = new AudioContext();
+  }
+
+  birthdayAudioContext.resume();
+  stopBirthdaySong();
+
+  const beatDuration = 0.34;
+  const startTime = birthdayAudioContext.currentTime + 0.04;
+  let beatOffset = 0;
+
+  birthdayMelody.forEach(({ note, beats }) => {
+    const duration = beats * beatDuration;
+    const noteStart = startTime + beatOffset * beatDuration;
+    const noteEnd = noteStart + duration * 0.88;
+    const oscillator = birthdayAudioContext.createOscillator();
+    const gain = birthdayAudioContext.createGain();
+
+    oscillator.type = "triangle";
+    oscillator.frequency.setValueAtTime(noteFrequencies[note], noteStart);
+    gain.gain.setValueAtTime(0.0001, noteStart);
+    gain.gain.exponentialRampToValueAtTime(0.14, noteStart + 0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001, noteEnd);
+
+    oscillator.connect(gain);
+    gain.connect(birthdayAudioContext.destination);
+    oscillator.start(noteStart);
+    oscillator.stop(noteEnd + 0.03);
+    oscillator.addEventListener("ended", () => {
+      activeBirthdayNotes = activeBirthdayNotes.filter((noteNode) => noteNode !== oscillator);
+    });
+
+    activeBirthdayNotes.push(oscillator);
+    beatOffset += beats;
+  });
+}
+
 function handleCandleClick(event) {
   const button = event.currentTarget;
   const rect = button.getBoundingClientRect();
@@ -303,6 +377,7 @@ function handleCandleClick(event) {
   const originY = rect.top + rect.height / 2;
 
   button.classList.add("is-blowing");
+  playBirthdaySong();
   candleBurst(originX, originY);
 
   window.setTimeout(() => {
