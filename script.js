@@ -91,20 +91,21 @@ let birthdayAudioContext = null;
 let activeBirthdayNotes = [];
 
 const birthdayMelody = [
-  { note: "G4", beats: 0.5 },
-  { note: "G4", beats: 0.5 },
-  { note: "A4", beats: 1 },
-  { note: "G4", beats: 1 },
-  { note: "C5", beats: 1 },
-  { note: "B4", beats: 1.7 }
+  { note: "G4", harmony: "E4", beats: 0.55 },
+  { note: "G4", harmony: "E4", beats: 0.55 },
+  { note: "A4", harmony: "F4", beats: 1.05 },
+  { note: "G4", harmony: "E4", beats: 1.05 },
+  { note: "C5", harmony: "G4", beats: 1.05 },
+  { note: "B4", harmony: "G4", beats: 2 }
 ];
 
 const noteFrequencies = {
+  E4: 329.63,
+  F4: 349.23,
   G4: 392,
   A4: 440,
   B4: 493.88,
-  C5: 523.25,
-  D5: 587.33
+  C5: 523.25
 };
 
 function resizeCanvas() {
@@ -326,6 +327,99 @@ function stopBirthdaySong() {
   activeBirthdayNotes = [];
 }
 
+function trackBirthdayOscillator(oscillator) {
+  oscillator.addEventListener("ended", () => {
+    activeBirthdayNotes = activeBirthdayNotes.filter((noteNode) => noteNode !== oscillator);
+  });
+
+  activeBirthdayNotes.push(oscillator);
+}
+
+function playPianoNote(frequency, startTime, endTime, options = {}) {
+  const {
+    volume = 0.1,
+    detune = 0,
+    cutoff = 1800,
+    attack = 0.015
+  } = options;
+  const body = birthdayAudioContext.createOscillator();
+  const overtone = birthdayAudioContext.createOscillator();
+  const bodyGain = birthdayAudioContext.createGain();
+  const overtoneGain = birthdayAudioContext.createGain();
+  const filter = birthdayAudioContext.createBiquadFilter();
+  const gain = birthdayAudioContext.createGain();
+  const decayTime = Math.min(startTime + 0.24, endTime - 0.05);
+
+  body.type = "triangle";
+  overtone.type = "sine";
+  body.frequency.setValueAtTime(frequency, startTime);
+  overtone.frequency.setValueAtTime(frequency * 2, startTime);
+  body.detune.setValueAtTime(detune, startTime);
+  overtone.detune.setValueAtTime(detune + 3, startTime);
+
+  bodyGain.gain.setValueAtTime(0.86, startTime);
+  overtoneGain.gain.setValueAtTime(0.18, startTime);
+  filter.type = "lowpass";
+  filter.frequency.setValueAtTime(cutoff, startTime);
+  filter.frequency.exponentialRampToValueAtTime(cutoff * 0.58, endTime);
+  filter.Q.setValueAtTime(0.5, startTime);
+
+  gain.gain.setValueAtTime(0.0001, startTime);
+  gain.gain.exponentialRampToValueAtTime(volume, startTime + attack);
+  gain.gain.exponentialRampToValueAtTime(volume * 0.48, decayTime);
+  gain.gain.exponentialRampToValueAtTime(0.0001, endTime);
+
+  body.connect(bodyGain);
+  overtone.connect(overtoneGain);
+  bodyGain.connect(filter);
+  overtoneGain.connect(filter);
+  filter.connect(gain);
+  gain.connect(birthdayAudioContext.destination);
+
+  body.start(startTime);
+  overtone.start(startTime);
+  body.stop(endTime + 0.03);
+  overtone.stop(endTime + 0.03);
+  trackBirthdayOscillator(body);
+  trackBirthdayOscillator(overtone);
+}
+
+function playSparkleNote(frequency, startTime, endTime) {
+  const sparkle = birthdayAudioContext.createOscillator();
+  const gain = birthdayAudioContext.createGain();
+  const sparkleEnd = Math.min(endTime, startTime + 0.42);
+
+  sparkle.type = "sine";
+  sparkle.frequency.setValueAtTime(frequency * 4, startTime);
+  gain.gain.setValueAtTime(0.0001, startTime);
+  gain.gain.exponentialRampToValueAtTime(0.022, startTime + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.0001, sparkleEnd);
+
+  sparkle.connect(gain);
+  gain.connect(birthdayAudioContext.destination);
+  sparkle.start(startTime);
+  sparkle.stop(sparkleEnd + 0.03);
+  trackBirthdayOscillator(sparkle);
+}
+
+function playIntroChime(startTime) {
+  const chime = birthdayAudioContext.createOscillator();
+  const gain = birthdayAudioContext.createGain();
+  const noteEnd = startTime + 0.68;
+
+  chime.type = "sine";
+  chime.frequency.setValueAtTime(noteFrequencies.C5 * 2, startTime);
+  gain.gain.setValueAtTime(0.0001, startTime);
+  gain.gain.exponentialRampToValueAtTime(0.03, startTime + 0.016);
+  gain.gain.exponentialRampToValueAtTime(0.0001, noteEnd);
+
+  chime.connect(gain);
+  gain.connect(birthdayAudioContext.destination);
+  chime.start(startTime);
+  chime.stop(noteEnd + 0.03);
+  trackBirthdayOscillator(chime);
+}
+
 function playBirthdaySong() {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -340,32 +434,30 @@ function playBirthdaySong() {
   birthdayAudioContext.resume();
   stopBirthdaySong();
 
-  const beatDuration = 0.34;
+  const beatDuration = 0.42;
   const startTime = birthdayAudioContext.currentTime + 0.04;
+  const melodyStartTime = startTime + 0.24;
   let beatOffset = 0;
 
-  birthdayMelody.forEach(({ note, beats }) => {
+  playIntroChime(startTime);
+
+  birthdayMelody.forEach(({ note, harmony, beats }) => {
     const duration = beats * beatDuration;
-    const noteStart = startTime + beatOffset * beatDuration;
-    const noteEnd = noteStart + duration * 0.88;
-    const oscillator = birthdayAudioContext.createOscillator();
-    const gain = birthdayAudioContext.createGain();
+    const noteStart = melodyStartTime + beatOffset * beatDuration;
+    const noteEnd = noteStart + duration * 0.9;
+    const frequency = noteFrequencies[note];
 
-    oscillator.type = "triangle";
-    oscillator.frequency.setValueAtTime(noteFrequencies[note], noteStart);
-    gain.gain.setValueAtTime(0.0001, noteStart);
-    gain.gain.exponentialRampToValueAtTime(0.14, noteStart + 0.025);
-    gain.gain.exponentialRampToValueAtTime(0.0001, noteEnd);
-
-    oscillator.connect(gain);
-    gain.connect(birthdayAudioContext.destination);
-    oscillator.start(noteStart);
-    oscillator.stop(noteEnd + 0.03);
-    oscillator.addEventListener("ended", () => {
-      activeBirthdayNotes = activeBirthdayNotes.filter((noteNode) => noteNode !== oscillator);
+    playPianoNote(frequency, noteStart, noteEnd, {
+      volume: 0.115,
+      cutoff: 2100
     });
-
-    activeBirthdayNotes.push(oscillator);
+    playPianoNote(noteFrequencies[harmony] / 2, noteStart + 0.02, noteEnd + 0.05, {
+      volume: 0.055,
+      detune: -7,
+      cutoff: 850,
+      attack: 0.02
+    });
+    playSparkleNote(frequency, noteStart + 0.03, noteEnd);
     beatOffset += beats;
   });
 }
