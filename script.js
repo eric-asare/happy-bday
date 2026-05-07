@@ -62,33 +62,33 @@ const memories = [
   {
     label: "Hospitality",
     title: "Warm tables, open doors",
-    hint: "A placeholder for the meals, welcome, and care you give so freely.",
-    image: "assets/memories/cat-hospitality.jpg",
-    alt: "Cat hospitality memory placeholder",
+    hint: "for the meals, welcome, and care you give so freely.",
+    image: "assets/memories/students.JPG",
+    alt: "hospitality memory placeholder",
     initial: "01"
   },
   {
     label: "Students",
     title: "A blessing to students",
-    hint: "A placeholder for the many students touched by your warmth.",
-    image: "assets/memories/cat-students.jpg",
-    alt: "Cat students memory placeholder",
+    hint: "for the many students touched by your love for the gospel.",
+    image: "assets/memories/blessingstudents.JPG",
+    alt: "students memory placeholder",
     initial: "02"
   },
   {
     label: "Church family",
     title: "Brothers and sisters in Christ",
-    hint: "A placeholder for the church family gathered around you.",
-    image: "assets/memories/cat-church-family.jpg",
-    alt: "Cat church family memory placeholder",
+    hint: "for the church family gathered around you.",
+    image: "assets/memories/biggroup.JPG",
+    alt: "church family memory placeholder",
     initial: "03"
   },
   {
     label: "Friendship",
     title: "Sister in Christ and friend",
-    hint: "A placeholder for friendship, prayer, and shared life.",
-    image: "assets/memories/cat-friendship.jpg",
-    alt: "Cat friendship memory placeholder",
+    hint: "for friendship, prayer, and shared life.",
+    image: "assets/memories/fun.JPG",
+    alt: "friendship memory placeholder",
     initial: "04"
   }
 ];
